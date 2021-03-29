@@ -15,6 +15,7 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
 # declaring the required variables
 label = []
@@ -41,46 +42,43 @@ fnames_val, classes_val, bboxes_val = load_labels(val_d)
 fnames_test, classes_test, bboxes_test = load_labels(test_d)
 fnames_train, classes_train, bboxes_train = load_labels(train_d)
 
-# defination for loading the image for training, testing, and validation
+# combining the three datasets
+fnames = list(itertools.chain(fnames_train, fnames_test, fnames_val))
+classes = list(itertools.chain(classes_train, classes_test, classes_val))
+
+# loading the images
 def load_and_preprocess(image_file):
-    image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
+    image = cv2.imread(image_file)
     image = cv2.resize(image, (32, 32))
     image = image.astype(np.float32)/255.0
     return image
-    
-fnames_val_file = []
-for i in range(len(fnames_val)):
-    f = os.path.join(d, fnames_val[i])
-    image = load_and_preprocess(f)
-    fnames_val_file.append(image)
-    
-fnames_test_file = []
-for i in range(len(fnames_test)):
-    f = os.path.join(d, fnames_test[i])
-    image = load_and_preprocess(f, bboxes_test[i])
-    fnames_test_file.append(image)
-    
-fnames_train_file = []
-for i in range(len(fnames_train)):
-    f = os.path.join(d, fnames_train[i])
-    image = load_and_preprocess(f, bboxes_train[i])
-    fnames_train_file.append(image)
-    
-# convering to numpy array
-fnames_val_file = np.array(fnames_val_file)
-fnames_test_file = np.array(fnames_test_file)
-fnames_train_file = np.array(fnames_train_file)
 
-fnames_val_file.shape
-fnames_test_file.shape
-fnames_train_file.shape
+x = []
+for i in range(len(fnames)):
+    f = os.path.join(d, fnames[i])
+    image = load_and_preprocess(f)
+    x.append(image)
+    
+# plotting the dataset
+sns.countplot(classes)
+
+# reshaping the dataset
+x = np.array(x)
+x = np.reshape(x, (len(x), 32, 32, 3))
+
+# checking the dataset
+print('Shape of samples:', x.shape)
+print('Shape of classes:', len(classes))
 
 #looking at the first image
 index = 0
-print(fnames_val_file[index])
+print(x[index])
 #looking as an image
-img = plt.imshow(fnames_val_file[index])
+img = plt.imshow(x[index])
 #printing the label of the image
-print('The image label is: ', classes_val[index])
+print('The image label is: ', classes[index])
 #print the image class
-print('The image class is: ', class_names[classes_val[index]])
+print('The image class is: ', class_names[classes[index]])
+
+# splitting the datasets
+x_train, x_test, y_train, y_test = train_test_split(x, classes, test_size=0.2, random_state=42)
