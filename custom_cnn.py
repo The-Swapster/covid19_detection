@@ -55,6 +55,10 @@ sns.countplot(y_test)
 # training the model
 hist = model.fit(x_train, y_train_encode, batch_size = 256, epochs = 20, validation_split=0.1)
 
+# saving and loading the model
+model.save('/content/drive/MyDrive/Covid19/ccnn.h5')
+model = models.load_model('/content/drive/MyDrive/Covid19/ccnn.h5')
+
 # evaluating the model
 print("Loss of the model is - " , model.evaluate(x_test,y_test_encode)[0])
 print("Accuracy of the model is - " , model.evaluate(x_test,y_test_encode)[1]*100 , "%")
@@ -67,7 +71,7 @@ val_loss = hist.history['val_loss']
 print('Average training accuracy: ', np.mean(train_acc))
 print('Average training loss: ', np.mean(train_loss))
 print('Average validation accuracy: ', np.mean(val_acc))
-print('Average validation loss: ', np.mean(val_acc))
+print('Average validation loss: ', np.mean(val_loss))
 
 # plotting the training and testing accuracy and loss
 epochs = [i for i in range(20)]
