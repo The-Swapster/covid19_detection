@@ -82,3 +82,8 @@ print('The image class is: ', class_names[classes[index]])
 
 # splitting the datasets
 x_train, x_test, y_train, y_test = train_test_split(x, classes, test_size=0.2, random_state=42)
+
+class_names = ('Normal', 'Pneumonia', 'COVID-19')
+
+# checking the distribution of images in various classes
+sns.countplot(classes)
